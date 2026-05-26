@@ -44,6 +44,17 @@ app.get('/api/kudos', async (req, res) => {
   }
 });
 
+// DELETE /api/kudos/:id
+app.delete('/api/kudos/:id', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM kudos WHERE id = $1', [req.params.id]);
+    res.status(204).end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete kudo' });
+  }
+});
+
 // POST /api/kudos
 app.post('/api/kudos', async (req, res) => {
   const { name, msg, emoji, color, tilt, image } = req.body;

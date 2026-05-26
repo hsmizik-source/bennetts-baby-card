@@ -343,6 +343,24 @@
     font-style: italic;
   }
 
+  /* Delete button */
+  .delete-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.15s;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 4px;
+  }
+  .kudo-note:hover .delete-btn { opacity: 0.5; }
+  .delete-btn:hover { opacity: 1 !important; background: rgba(0,0,0,0.08); }
+
   /* Image upload */
   .image-row {
     display: flex;
@@ -593,11 +611,28 @@
     if (!animate) note.style.animation = 'none';
 
     note.innerHTML = `
+      <button class="delete-btn" title="Delete">✕</button>
       <div class="note-emoji">${kudo.emoji}</div>
       ${kudo.image ? `<img class="note-image" src="${kudo.image}" alt="">` : ''}
       <div class="note-msg">${escHtml(kudo.msg)}</div>
       <div class="note-from">— ${escHtml(kudo.name)}</div>
     `;
+    note.querySelector('.delete-btn').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      if (!confirm(`Delete ${escHtml(kudo.name)}'s message?`)) return;
+      try {
+        await fetch(`/api/kudos/${kudo.id}`, { method: 'DELETE' });
+        note.animate([{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(0.7)' }], { duration: 200 })
+          .onfinish = () => {
+            note.remove();
+            if (!document.querySelector('.kudo-note')) {
+              document.getElementById('kudo-grid').innerHTML = '<p class="empty-state">No messages yet — be the first to sign! 🌷</p>';
+            }
+          };
+      } catch (err) {
+        console.error('Failed to delete kudo:', err);
+      }
+    });
     grid.appendChild(note);
   }
 
