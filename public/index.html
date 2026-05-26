@@ -343,6 +343,42 @@
     font-style: italic;
   }
 
+  /* Image upload */
+  .image-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .image-label {
+    font-size: 0.85rem;
+    color: #3a7050;
+    cursor: pointer;
+  }
+  .image-label span { color: #888; }
+  #input-image {
+    font-size: 0.85rem;
+    color: #2d4a35;
+    border: 1.5px dashed #b2ccb8;
+    border-radius: 10px;
+    padding: 8px 12px;
+    background: #f4f8f5;
+    cursor: pointer;
+  }
+  #image-preview img {
+    max-width: 100%;
+    max-height: 160px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1.5px solid #b2ccb8;
+  }
+  .note-image {
+    width: 100%;
+    border-radius: 8px;
+    object-fit: cover;
+    max-height: 140px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
   /* responsive */
   @media (max-width: 500px) {
     .scene { width: 340px; height: 460px; }
@@ -402,9 +438,31 @@
           <option value="✨">✨ Sparkle</option>
           <option value="🎉">🎉 Celebrate</option>
           <option value="🦋">🦋 Butterfly</option>
+          <option value="👶">👶 Baby face</option>
+          <option value="🥰">🥰 Adore</option>
+          <option value="🍀">🍀 Lucky</option>
+          <option value="🌻">🌻 Sunflower</option>
+          <option value="🎈">🎈 Balloon</option>
+          <option value="🤍">🤍 White heart</option>
+          <option value="💚">💚 Green heart</option>
+          <option value="🐣">🐣 Hatching</option>
+          <option value="🦁">🦁 Lion</option>
+          <option value="🐻">🐻 Bear</option>
+          <option value="🐨">🐨 Koala</option>
+          <option value="🦄">🦄 Unicorn</option>
+          <option value="🌙">🌙 Moon</option>
+          <option value="☀️">☀️ Sun</option>
+          <option value="🎵">🎵 Music</option>
+          <option value="🙌">🙌 Hands up</option>
+          <option value="💪">💪 Strong</option>
         </select>
       </div>
       <textarea id="input-msg" placeholder="Write your message…" maxlength="280"></textarea>
+      <div class="image-row">
+        <label class="image-label" for="input-image">📎 Attach a photo <span>(optional)</span></label>
+        <input type="file" id="input-image" accept="image/*">
+        <div id="image-preview"></div>
+      </div>
       <div class="color-row">
         <label>Note color:</label>
         <span class="color-swatch active" style="background:#fff9c4" data-color="#fff9c4"></span>
@@ -455,6 +513,7 @@
 
   // ── Kudo board ────────────────────────────────────────
   let selectedColor = '#fff9c4';
+  let selectedImage = null;
 
   // Color swatches
   document.querySelectorAll('.color-swatch').forEach(sw => {
@@ -463,6 +522,19 @@
       sw.classList.add('active');
       selectedColor = sw.dataset.color;
     });
+  });
+
+  // Image preview
+  document.getElementById('input-image').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    const preview = document.getElementById('image-preview');
+    if (!file) { selectedImage = null; preview.innerHTML = ''; return; }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      selectedImage = ev.target.result;
+      preview.innerHTML = `<img src="${selectedImage}" alt="preview">`;
+    };
+    reader.readAsDataURL(file);
   });
 
   // Add message
@@ -480,7 +552,7 @@
       const res = await fetch('/api/kudos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, msg, emoji, color: selectedColor, tilt })
+        body: JSON.stringify({ name, msg, emoji, color: selectedColor, tilt, image: selectedImage })
       });
       if (!res.ok) throw new Error('Server error');
       const kudo = await res.json();
@@ -488,6 +560,9 @@
       renderNote(kudo, true);
       document.getElementById('input-name').value = '';
       document.getElementById('input-msg').value = '';
+      document.getElementById('input-image').value = '';
+      document.getElementById('image-preview').innerHTML = '';
+      selectedImage = null;
       launchConfetti();
     } catch (err) {
       console.error('Failed to post kudo:', err);
@@ -519,6 +594,7 @@
 
     note.innerHTML = `
       <div class="note-emoji">${kudo.emoji}</div>
+      ${kudo.image ? `<img class="note-image" src="${kudo.image}" alt="">` : ''}
       <div class="note-msg">${escHtml(kudo.msg)}</div>
       <div class="note-from">— ${escHtml(kudo.name)}</div>
     `;

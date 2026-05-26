@@ -10,7 +10,7 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '5mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Create table on startup
@@ -23,8 +23,12 @@ async function init() {
       emoji      TEXT,
       color      TEXT,
       tilt       NUMERIC,
+      image      TEXT,
       created_at TIMESTAMPTZ DEFAULT now()
     )
+  `);
+  await pool.query(`
+    ALTER TABLE kudos ADD COLUMN IF NOT EXISTS image TEXT
   `);
   console.log('Database ready');
 }
@@ -42,14 +46,14 @@ app.get('/api/kudos', async (req, res) => {
 
 // POST /api/kudos
 app.post('/api/kudos', async (req, res) => {
-  const { name, msg, emoji, color, tilt } = req.body;
+  const { name, msg, emoji, color, tilt, image } = req.body;
   if (!name || !msg) {
     return res.status(400).json({ error: 'name and msg are required' });
   }
   try {
     const result = await pool.query(
-      'INSERT INTO kudos (name, msg, emoji, color, tilt) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [name, msg, emoji || '💜', color || '#fff9c4', tilt ?? 0]
+      'INSERT INTO kudos (name, msg, emoji, color, tilt, image) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [name, msg, emoji || '💜', color || '#fff9c4', tilt ?? 0, image || null]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
