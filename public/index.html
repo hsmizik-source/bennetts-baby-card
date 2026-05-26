@@ -404,6 +404,30 @@
     background: #f4f8f5;
     cursor: pointer;
   }
+  .gif-url-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .gif-or {
+    font-size: 0.8rem;
+    color: #888;
+    flex-shrink: 0;
+  }
+  #input-gif-url {
+    flex: 1;
+    border: 1.5px solid #b2ccb8;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    color: #2d4a35;
+    background: #f4f8f5;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  #input-gif-url:focus { border-color: #3a7050; }
+
   #image-preview img {
     max-width: 100%;
     max-height: 160px;
@@ -502,8 +526,12 @@
       </div>
       <textarea id="input-msg" placeholder="Write your message…" maxlength="280"></textarea>
       <div class="image-row">
-        <label class="image-label" for="input-image">📎 Attach an image <span>(optional)</span></label>
-        <input type="file" id="input-image" accept="image/*">
+        <label class="image-label" for="input-image">📎 Attach an image or GIF <span>(optional)</span></label>
+        <input type="file" id="input-image" accept="image/*,image/gif">
+        <div class="gif-url-row">
+          <span class="gif-or">or</span>
+          <input type="text" id="input-gif-url" placeholder="Paste a GIF URL (e.g. from Giphy)">
+        </div>
         <div id="image-preview"></div>
       </div>
       <div class="color-row">
@@ -583,17 +611,28 @@
     });
   });
 
-  // Image preview
+  // Image/GIF preview — file upload
   document.getElementById('input-image').addEventListener('change', (e) => {
     const file = e.target.files[0];
     const preview = document.getElementById('image-preview');
     if (!file) { selectedImage = null; preview.innerHTML = ''; return; }
+    document.getElementById('input-gif-url').value = '';
     const reader = new FileReader();
     reader.onload = (ev) => {
       selectedImage = ev.target.result;
       preview.innerHTML = `<img src="${selectedImage}" alt="preview">`;
     };
     reader.readAsDataURL(file);
+  });
+
+  // GIF URL
+  document.getElementById('input-gif-url').addEventListener('input', (e) => {
+    const url = e.target.value.trim();
+    const preview = document.getElementById('image-preview');
+    if (!url) { selectedImage = null; preview.innerHTML = ''; return; }
+    document.getElementById('input-image').value = '';
+    selectedImage = url;
+    preview.innerHTML = `<img src="${url}" alt="gif preview">`;
   });
 
   // Add message
@@ -620,6 +659,7 @@
       document.getElementById('input-name').value = '';
       document.getElementById('input-msg').value = '';
       document.getElementById('input-image').value = '';
+      document.getElementById('input-gif-url').value = '';
       document.getElementById('image-preview').innerHTML = '';
       selectedImage = null;
       selectedEmojis = new Set(['💜']);
