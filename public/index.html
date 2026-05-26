@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Congratulations on Your New Baby</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 40%, #e3f2fd 100%);
+    font-family: 'Lato', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── PARTICLES ── */
+  .particle {
+    position: fixed;
+    pointer-events: none;
+    animation: floatUp linear infinite;
+    opacity: 0;
+    z-index: 0;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.7; }
+    90%  { opacity: 0.7; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* ── LAYOUT ── */
+  .page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 60px;
+    gap: 48px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── CARD FLIP ── */
+  .scene {
+    width: 420px;
+    height: 560px;
+    perspective: 1200px;
+    cursor: pointer;
+    user-select: none;
+    flex-shrink: 0;
+  }
+
+  .card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 1.1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .card.open { transform: rotateY(-180deg); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.18), 0 8px 20px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  /* FRONT */
+  .front {
+    background: linear-gradient(160deg, #fff9fb 0%, #fce4ec 60%, #f8bbd0 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 40px 32px;
+  }
+  .front .moon {
+    font-size: 72px;
+    animation: sway 3s ease-in-out infinite;
+    filter: drop-shadow(0 4px 8px rgba(240,98,146,0.25));
+  }
+  @keyframes sway {
+    0%, 100% { transform: rotate(-6deg); }
+    50%       { transform: rotate(6deg); }
+  }
+  .front h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.1rem;
+    color: #ad1457;
+    text-align: center;
+    line-height: 1.25;
+  }
+  .front h1 em {
+    display: block;
+    font-size: 1.3rem;
+    color: #c2185b;
+    font-style: italic;
+  }
+  .front .stars {
+    display: flex;
+    gap: 10px;
+    font-size: 20px;
+    animation: twinkle 2s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle {
+    from { opacity: 0.5; transform: scale(0.95); }
+    to   { opacity: 1;   transform: scale(1.05); }
+  }
+  .front .hint {
+    font-size: 0.78rem;
+    color: #e91e8c88;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 10px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50%       { opacity: 1; }
+  }
+  .front::before, .front::after {
+    content: '✿';
+    position: absolute;
+    font-size: 28px;
+    color: #f48fb155;
+  }
+  .front::before { top: 16px; left: 20px; }
+  .front::after  { bottom: 16px; right: 20px; }
+
+  /* BACK */
+  .back {
+    background: linear-gradient(160deg, #f3e5f5 0%, #e8f5e9 100%);
+    transform: rotateY(180deg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px 36px 32px;
+  }
+  .back::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #ce93d8, #a5d6a7, #ce93d8);
+    border-radius: 24px 24px 0 0;
+  }
+  .back .header-icon { font-size: 48px; margin-bottom: 4px; }
+  .back h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.55rem;
+    color: #6a1b9a;
+    text-align: center;
+    line-height: 1.3;
+  }
+  .divider {
+    width: 64px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ce93d8, transparent);
+    border-radius: 2px;
+    margin: 6px 0;
+  }
+  .back p {
+    font-size: 1.02rem;
+    color: #4a148c;
+    text-align: center;
+    line-height: 1.75;
+    font-weight: 300;
+  }
+  .back p strong { font-weight: 400; color: #7b1fa2; }
+  .back .signature {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: #9c27b0;
+    text-align: center;
+    margin-top: 8px;
+  }
+  .back .footer-row { display: flex; gap: 12px; font-size: 22px; margin-top: 4px; }
+
+  /* ── KUDO BOARD ── */
+  .kudo-section {
+    width: 100%;
+    max-width: 860px;
+  }
+
+  .kudo-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: #6a1b9a;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .kudo-section .kudo-sub {
+    text-align: center;
+    color: #9c27b0;
+    font-size: 0.9rem;
+    margin-bottom: 28px;
+    letter-spacing: 0.04em;
+  }
+
+  /* Sign form */
+  .sign-form {
+    background: white;
+    border-radius: 20px;
+    padding: 28px 32px;
+    box-shadow: 0 8px 32px rgba(156,39,176,0.1);
+    margin-bottom: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .sign-form .form-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .sign-form input,
+  .sign-form textarea,
+  .sign-form select {
+    border: 1.5px solid #e1bee7;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.95rem;
+    color: #4a148c;
+    background: #fdf6ff;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: none;
+  }
+  .sign-form input:focus,
+  .sign-form textarea:focus,
+  .sign-form select:focus { border-color: #ab47bc; }
+  .sign-form input[type="text"] { flex: 1; min-width: 140px; }
+  .sign-form textarea { width: 100%; height: 90px; }
+  .sign-form .color-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .sign-form .color-row label { font-size: 0.85rem; color: #7b1fa2; }
+  .color-swatch {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .color-swatch:hover  { transform: scale(1.15); }
+  .color-swatch.active { border-color: #4a148c; transform: scale(1.15); }
+
+  .sign-btn {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #ce93d8, #9c27b0);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 11px 32px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 16px rgba(156,39,176,0.25);
+  }
+  .sign-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(156,39,176,0.35); }
+  .sign-btn:active { transform: translateY(0); }
+
+  /* Sticky notes grid */
+  .kudo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+
+  .kudo-note {
+    border-radius: 14px;
+    padding: 20px 18px 16px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    transform: rotate(var(--tilt, 0deg));
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: dropIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes dropIn {
+    from { opacity: 0; transform: scale(0.7) rotate(var(--tilt, 0deg)); }
+    to   { opacity: 1; transform: scale(1)   rotate(var(--tilt, 0deg)); }
+  }
+  .kudo-note:hover {
+    transform: scale(1.04) rotate(0deg);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+    z-index: 2;
+  }
+  .kudo-note .note-emoji {
+    font-size: 26px;
+    line-height: 1;
+  }
+  .kudo-note .note-msg {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: #1a1a1a;
+    flex: 1;
+    word-break: break-word;
+  }
+  .kudo-note .note-from {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: #444;
+    text-align: right;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    padding-top: 8px;
+  }
+  /* Pin */
+  .kudo-note::before {
+    content: '📌';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 18px;
+  }
+
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 20px;
+    color: #ba68c8;
+    font-size: 0.95rem;
+    font-style: italic;
+  }
+
+  /* responsive */
+  @media (max-width: 500px) {
+    .scene { width: 340px; height: 460px; }
+    .front h1 { font-size: 1.7rem; }
+    .sign-form { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── CARD ── -->
+  <div class="scene" id="scene" title="Click to open">
+    <div class="card" id="card">
+      <div class="face front">
+        <div class="moon">🌙</div>
+        <h1>A Little Star<em>has arrived</em></h1>
+        <div class="stars">⭐ ✨ 🌟 ✨ ⭐</div>
+        <p class="hint">tap to open</p>
+      </div>
+      <div class="face back">
+        <div>
+          <div class="header-icon">👶</div>
+          <h2>Congratulations on your beautiful new baby</h2>
+          <div class="divider"></div>
+        </div>
+        <p>
+          The <strong>smallest feet</strong> make the biggest<br>
+          footprints on our hearts.<br><br>
+          May your days be filled with <strong>wonder</strong>,<br>
+          your nights with <strong>peaceful sleep</strong>,<br>
+          and your whole world with a love<br>
+          you never knew was possible.<br><br>
+          Welcome to the most <strong>extraordinary</strong><br>
+          adventure of your life. 🌸
+        </p>
+        <div>
+          <p class="signature">With so much love &amp; joy</p>
+          <div class="footer-row">🍼 💜 🌷 💜 🍼</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── KUDO BOARD ── -->
+  <section class="kudo-section">
+    <h3>Sign the Card 💌</h3>
+    <p class="kudo-sub">Leave your love for the new family</p>
+
+    <div class="sign-form">
+      <div class="form-row">
+        <input type="text" id="input-name" placeholder="Your name" maxlength="40">
+        <select id="input-emoji">
+          <option value="💜">💜 Love</option>
+          <option value="🌸">🌸 Blossom</option>
+          <option value="⭐">⭐ Star</option>
+          <option value="🍼">🍼 Baby</option>
+          <option value="🌈">🌈 Rainbow</option>
+          <option value="✨">✨ Sparkle</option>
+          <option value="🎉">🎉 Celebrate</option>
+          <option value="🦋">🦋 Butterfly</option>
+        </select>
+      </div>
+      <textarea id="input-msg" placeholder="Write your message…" maxlength="280"></textarea>
+      <div class="color-row">
+        <label>Note color:</label>
+        <span class="color-swatch active" style="background:#fff9c4" data-color="#fff9c4"></span>
+        <span class="color-swatch" style="background:#f8bbd0" data-color="#f8bbd0"></span>
+        <span class="color-swatch" style="background:#e1bee7" data-color="#e1bee7"></span>
+        <span class="color-swatch" style="background:#b3e5fc" data-color="#b3e5fc"></span>
+        <span class="color-swatch" style="background:#c8e6c9" data-color="#c8e6c9"></span>
+        <span class="color-swatch" style="background:#ffe0b2" data-color="#ffe0b2"></span>
+      </div>
+      <button class="sign-btn" id="sign-btn">Add my message ✉️</button>
+    </div>
+
+    <div class="kudo-grid" id="kudo-grid">
+      <p class="empty-state">No messages yet — be the first to sign! 🌷</p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  // ── Card flip ──────────────────────────────────────────
+  const card = document.getElementById('card');
+  const scene = document.getElementById('scene');
+  let isOpen = false;
+  scene.addEventListener('click', () => {
+    isOpen = !isOpen;
+    card.classList.toggle('open', isOpen);
+    if (isOpen) launchConfetti();
+  });
+
+  // ── Particles ─────────────────────────────────────────
+  const EMOJIS = ['🌸','⭐','✨','💜','🌟','🍼','💕','🌷'];
+  function spawnParticle(big = false) {
+    const el = document.createElement('div');
+    el.className = 'particle';
+    el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+    el.style.cssText = `
+      left:${Math.random()*100}vw;
+      font-size:${big ? 18+Math.random()*18 : 10+Math.random()*10}px;
+      animation-duration:${big ? 3.5+Math.random()*3 : 7+Math.random()*4}s;
+      animation-delay:${Math.random()*0.5}s;
+    `;
+    document.body.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+  function launchConfetti() { for (let i=0;i<30;i++) setTimeout(()=>spawnParticle(true),i*80); }
+  setInterval(() => { if (!isOpen) spawnParticle(false); }, 900);
+
+  // ── Kudo board ────────────────────────────────────────
+  let selectedColor = '#fff9c4';
+
+  // Color swatches
+  document.querySelectorAll('.color-swatch').forEach(sw => {
+    sw.addEventListener('click', () => {
+      document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+      sw.classList.add('active');
+      selectedColor = sw.dataset.color;
+    });
+  });
+
+  // Add message
+  document.getElementById('sign-btn').addEventListener('click', async () => {
+    const name  = document.getElementById('input-name').value.trim();
+    const msg   = document.getElementById('input-msg').value.trim();
+    const emoji = document.getElementById('input-emoji').value;
+
+    if (!name) { shake('input-name'); return; }
+    if (!msg)  { shake('input-msg');  return; }
+
+    const tilt = (Math.random() * 4 - 2).toFixed(1);
+
+    try {
+      const res = await fetch('/api/kudos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, msg, emoji, color: selectedColor, tilt })
+      });
+      if (!res.ok) throw new Error('Server error');
+      const kudo = await res.json();
+
+      renderNote(kudo, true);
+      document.getElementById('input-name').value = '';
+      document.getElementById('input-msg').value = '';
+      launchConfetti();
+    } catch (err) {
+      console.error('Failed to post kudo:', err);
+    }
+  });
+
+  function renderAll(kudos) {
+    const grid = document.getElementById('kudo-grid');
+    grid.innerHTML = '';
+    if (!kudos || kudos.length === 0) {
+      grid.innerHTML = '<p class="empty-state">No messages yet — be the first to sign! 🌷</p>';
+      return;
+    }
+    kudos.forEach(k => renderNote(k, false));
+  }
+
+  function renderNote(kudo, animate) {
+    const grid = document.getElementById('kudo-grid');
+    // Remove empty state
+    const empty = grid.querySelector('.empty-state');
+    if (empty) empty.remove();
+
+    const note = document.createElement('div');
+    note.className = 'kudo-note';
+    note.dataset.id = kudo.id;
+    note.style.setProperty('--tilt', kudo.tilt + 'deg');
+    note.style.background = kudo.color;
+    if (!animate) note.style.animation = 'none';
+
+    note.innerHTML = `
+      <div class="note-emoji">${kudo.emoji}</div>
+      <div class="note-msg">${escHtml(kudo.msg)}</div>
+      <div class="note-from">— ${escHtml(kudo.name)}</div>
+    `;
+    grid.appendChild(note);
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function shake(id) {
+    const el = document.getElementById(id);
+    el.style.borderColor = '#e91e63';
+    el.animate([
+      {transform:'translateX(0)'},{transform:'translateX(-6px)'},
+      {transform:'translateX(6px)'},{transform:'translateX(0)'}
+    ], {duration: 300}).onfinish = () => el.style.borderColor = '';
+  }
+
+  // Load kudos from API on page load
+  fetch('/api/kudos')
+    .then(res => res.json())
+    .then(kudos => renderAll(kudos))
+    .catch(err => console.error('Failed to load kudos:', err));
+</script>
+</body>
+</html>
