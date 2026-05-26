@@ -343,6 +343,28 @@
     font-style: italic;
   }
 
+  /* Emoji picker */
+  .emoji-picker { display: flex; flex-direction: column; gap: 6px; }
+  .ep-label { font-size: 0.85rem; color: #3a7050; }
+  .ep-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .ep-btn {
+    background: #f4f8f5;
+    border: 1.5px solid #b2ccb8;
+    border-radius: 8px;
+    width: 36px; height: 36px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: transform 0.1s, border-color 0.1s, background 0.1s;
+    line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ep-btn:hover { transform: scale(1.2); }
+  .ep-btn.selected { border-color: #2e5e3e; background: #c9e0cd; }
+
   /* Delete button */
   .delete-btn {
     position: absolute;
@@ -447,33 +469,36 @@
     <div class="sign-form">
       <div class="form-row">
         <input type="text" id="input-name" placeholder="Your name" maxlength="40">
-        <select id="input-emoji">
-          <option value="💜">💜 Love</option>
-          <option value="🌸">🌸 Blossom</option>
-          <option value="⭐">⭐ Star</option>
-          <option value="🍼">🍼 Baby</option>
-          <option value="🌈">🌈 Rainbow</option>
-          <option value="✨">✨ Sparkle</option>
-          <option value="🎉">🎉 Celebrate</option>
-          <option value="🦋">🦋 Butterfly</option>
-          <option value="👶">👶 Baby face</option>
-          <option value="🥰">🥰 Adore</option>
-          <option value="🍀">🍀 Lucky</option>
-          <option value="🌻">🌻 Sunflower</option>
-          <option value="🎈">🎈 Balloon</option>
-          <option value="🤍">🤍 White heart</option>
-          <option value="💚">💚 Green heart</option>
-          <option value="🐣">🐣 Hatching</option>
-          <option value="🦁">🦁 Lion</option>
-          <option value="🐻">🐻 Bear</option>
-          <option value="🐨">🐨 Koala</option>
-          <option value="🦄">🦄 Unicorn</option>
-          <option value="🌙">🌙 Moon</option>
-          <option value="☀️">☀️ Sun</option>
-          <option value="🎵">🎵 Music</option>
-          <option value="🙌">🙌 Hands up</option>
-          <option value="💪">💪 Strong</option>
-        </select>
+        <div class="emoji-picker" id="emoji-picker">
+          <span class="ep-label">Pick emojis:</span>
+          <div class="ep-grid">
+            <button type="button" class="ep-btn" data-emoji="💜">💜</button>
+            <button type="button" class="ep-btn" data-emoji="🌸">🌸</button>
+            <button type="button" class="ep-btn" data-emoji="⭐">⭐</button>
+            <button type="button" class="ep-btn" data-emoji="🍼">🍼</button>
+            <button type="button" class="ep-btn" data-emoji="🌈">🌈</button>
+            <button type="button" class="ep-btn" data-emoji="✨">✨</button>
+            <button type="button" class="ep-btn" data-emoji="🎉">🎉</button>
+            <button type="button" class="ep-btn" data-emoji="🦋">🦋</button>
+            <button type="button" class="ep-btn" data-emoji="👶">👶</button>
+            <button type="button" class="ep-btn" data-emoji="🥰">🥰</button>
+            <button type="button" class="ep-btn" data-emoji="🍀">🍀</button>
+            <button type="button" class="ep-btn" data-emoji="🌻">🌻</button>
+            <button type="button" class="ep-btn" data-emoji="🎈">🎈</button>
+            <button type="button" class="ep-btn" data-emoji="🤍">🤍</button>
+            <button type="button" class="ep-btn" data-emoji="💚">💚</button>
+            <button type="button" class="ep-btn" data-emoji="🐣">🐣</button>
+            <button type="button" class="ep-btn" data-emoji="🦁">🦁</button>
+            <button type="button" class="ep-btn" data-emoji="🐻">🐻</button>
+            <button type="button" class="ep-btn" data-emoji="🐨">🐨</button>
+            <button type="button" class="ep-btn" data-emoji="🦄">🦄</button>
+            <button type="button" class="ep-btn" data-emoji="🌙">🌙</button>
+            <button type="button" class="ep-btn" data-emoji="☀️">☀️</button>
+            <button type="button" class="ep-btn" data-emoji="🎵">🎵</button>
+            <button type="button" class="ep-btn" data-emoji="🙌">🙌</button>
+            <button type="button" class="ep-btn" data-emoji="💪">💪</button>
+          </div>
+        </div>
       </div>
       <textarea id="input-msg" placeholder="Write your message…" maxlength="280"></textarea>
       <div class="image-row">
@@ -532,6 +557,22 @@
   // ── Kudo board ────────────────────────────────────────
   let selectedColor = '#fff9c4';
   let selectedImage = null;
+  let selectedEmojis = new Set(['💜']);
+
+  // Emoji picker — pre-select default
+  document.querySelector('.ep-btn[data-emoji="💜"]').classList.add('selected');
+  document.querySelectorAll('.ep-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const e = btn.dataset.emoji;
+      if (selectedEmojis.has(e)) {
+        selectedEmojis.delete(e);
+        btn.classList.remove('selected');
+      } else {
+        selectedEmojis.add(e);
+        btn.classList.add('selected');
+      }
+    });
+  });
 
   // Color swatches
   document.querySelectorAll('.color-swatch').forEach(sw => {
@@ -559,7 +600,7 @@
   document.getElementById('sign-btn').addEventListener('click', async () => {
     const name  = document.getElementById('input-name').value.trim();
     const msg   = document.getElementById('input-msg').value.trim();
-    const emoji = document.getElementById('input-emoji').value;
+    const emoji = selectedEmojis.size > 0 ? [...selectedEmojis].join('') : '💜';
 
     if (!name) { shake('input-name'); return; }
     if (!msg)  { shake('input-msg');  return; }
@@ -581,6 +622,9 @@
       document.getElementById('input-image').value = '';
       document.getElementById('image-preview').innerHTML = '';
       selectedImage = null;
+      selectedEmojis = new Set(['💜']);
+      document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('selected'));
+      document.querySelector('.ep-btn[data-emoji="💜"]').classList.add('selected');
       launchConfetti();
     } catch (err) {
       console.error('Failed to post kudo:', err);
