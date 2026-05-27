@@ -443,6 +443,30 @@
     border: 1px solid rgba(0,0,0,0.08);
   }
 
+  /* View toggle */
+  #view-toggle-row {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .view-toggle-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #6aaa7e, #2e5e3e);
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    padding: 10px 28px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    box-shadow: 0 4px 16px rgba(46,94,62,0.25);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .view-toggle-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(46,94,62,0.35);
+  }
+
   /* responsive */
   @media (max-width: 500px) {
     .scene { width: 340px; height: 460px; }
@@ -489,6 +513,7 @@
   <!-- ── KUDO BOARD ── -->
   <section class="kudo-section">
     <h3 id="kudo-heading">Sign the Card for Bennett 💌</h3>
+    <div id="view-toggle-row"></div>
 
     <div class="sign-form" id="sign-form">
       <div class="form-row">
@@ -747,9 +772,16 @@
   }
 
   // Bennett's read-only view
-  if (new URLSearchParams(window.location.search).get('view') === 'bennett') {
+  const isBennett = new URLSearchParams(window.location.search).get('view') === 'bennett';
+  const baseUrl = window.location.origin + window.location.pathname;
+  if (isBennett) {
     document.getElementById('sign-form').style.display = 'none';
     document.getElementById('kudo-heading').textContent = 'Messages for Bennett 💌';
+    document.getElementById('view-toggle-row').innerHTML =
+      `<a class="view-toggle-btn" href="${baseUrl}">✏️ Sign the card</a>`;
+  } else {
+    document.getElementById('view-toggle-row').innerHTML =
+      `<a class="view-toggle-btn" href="${baseUrl}?view=bennett">👀 Bennett's view</a>`;
   }
 
   // Load kudos from API on page load
