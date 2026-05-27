@@ -488,9 +488,9 @@
 
   <!-- ── KUDO BOARD ── -->
   <section class="kudo-section">
-    <h3>Sign the Card for Bennett 💌</h3>
+    <h3 id="kudo-heading">Sign the Card for Bennett 💌</h3>
 
-    <div class="sign-form">
+    <div class="sign-form" id="sign-form">
       <div class="form-row">
         <input type="text" id="input-name" placeholder="Your name" maxlength="40">
         <div class="emoji-picker" id="emoji-picker">
@@ -744,6 +744,12 @@
       {transform:'translateX(0)'},{transform:'translateX(-6px)'},
       {transform:'translateX(6px)'},{transform:'translateX(0)'}
     ], {duration: 300}).onfinish = () => el.style.borderColor = '';
+  }
+
+  // Bennett's read-only view
+  if (new URLSearchParams(window.location.search).get('view') === 'bennett') {
+    document.getElementById('sign-form').style.display = 'none';
+    document.getElementById('kudo-heading').textContent = 'Messages for Bennett 💌';
   }
 
   // Load kudos from API on page load
